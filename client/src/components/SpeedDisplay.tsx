@@ -14,7 +14,7 @@ export default function SpeedDisplay({
   onToggleAudio,
   error
 }: SpeedDisplayProps) {
-  const [countdownToBeep, setCountdownToBeep] = useState<number>(10);
+  const [countdownToBeep, setCountdownToBeep] = useState<number>(2);
   
   // Countdown timer for next beep
   useEffect(() => {
@@ -23,8 +23,8 @@ export default function SpeedDisplay({
     const interval = setInterval(() => {
       setCountdownToBeep(prev => {
         if (prev <= 1) {
-          // Reset to 10 when reaching 0
-          return 10;
+          // Reset to 2 when reaching 0
+          return 2;
         }
         return prev - 1;
       });
@@ -34,7 +34,7 @@ export default function SpeedDisplay({
   }, [audioEnabled]);
   
   // Flash effect when beep happens
-  const isBeeping = countdownToBeep === 10;
+  const isBeeping = countdownToBeep === 2;
   
   return (
     <>

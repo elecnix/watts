@@ -45,7 +45,7 @@ export default function useAudio() {
       
       // Create gain node for volume control
       const gainNode = context.createGain();
-      gainNode.gain.value = 0.1; // Keep volume low
+      gainNode.gain.value = 0.2; // Slightly increase volume
       
       // Connect nodes
       oscillator.connect(gainNode);
@@ -57,7 +57,7 @@ export default function useAudio() {
       oscillator.stop(now + duration);
       
       // Apply fade out to avoid clicks
-      gainNode.gain.linearRampToValueAtTime(0.1, now + duration - 0.05);
+      gainNode.gain.linearRampToValueAtTime(0.2, now + duration - 0.05);
       gainNode.gain.linearRampToValueAtTime(0, now + duration);
     } catch (error) {
       console.error("Error playing beep:", error);

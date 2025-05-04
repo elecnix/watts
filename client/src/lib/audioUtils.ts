@@ -48,7 +48,7 @@ export function generateTone(
   
   // Create gain node for volume
   const gainNode = context.createGain();
-  gainNode.gain.value = volume;
+  gainNode.gain.value = 0.3; // Higher volume
   
   // Connect nodes
   oscillator.connect(gainNode);

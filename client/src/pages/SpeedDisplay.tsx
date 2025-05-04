@@ -60,13 +60,13 @@ export default function SpeedDisplay() {
     const maxSpeed = 50;
     const frequency = minFreq + (Math.min(speed, maxSpeed) / maxSpeed) * (maxFreq - minFreq);
     
-    // Set up interval for beeping every 10 seconds
+    // Set up interval for beeping every 2 seconds
     const interval = setInterval(() => {
-      playBeep(frequency, 0.3); // Play beep with calculated frequency for 300ms
-    }, 10000);
+      playBeep(frequency, 0.2); // Play beep with calculated frequency for 200ms
+    }, 2000);
     
     // Initial beep
-    playBeep(frequency, 0.3);
+    playBeep(frequency, 0.2);
     
     return () => clearInterval(interval);
   }, [locationPermissionGranted, audioPermissionGranted, audioEnabled, speed, playBeep]);
