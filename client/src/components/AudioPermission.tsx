@@ -17,7 +17,7 @@ export default function AudioPermission({ onRequestPermission, onSkipPermission 
             </svg>
           </div>
           <h2 className="text-2xl font-semibold mb-2">Audio Feedback</h2>
-          <p className="text-secondary mb-8">Allow audio to receive speed-based sound feedback every 10 seconds.</p>
+          <p className="text-secondary mb-8">Allow audio to receive speed-based sound feedback every 2 seconds. Make sure your device volume is turned up.</p>
         </div>
         <Button 
           className="w-full py-6 bg-primary hover:bg-primary/90 text-base rounded-lg font-medium mb-3"

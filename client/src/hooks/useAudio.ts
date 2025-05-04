@@ -49,6 +49,19 @@ export default function useAudio() {
       const context = audioContextRef.current;
       
       // Create oscillator with square wave for more audible beep
+      // Try playing a short beep at 1kHz to ensure audio works
+      try {
+        const testOscillator = context.createOscillator();
+        testOscillator.type = 'square';
+        testOscillator.frequency.value = 1000;
+        testOscillator.connect(context.destination);
+        testOscillator.start();
+        testOscillator.stop(context.currentTime + 0.01);
+      } catch (e) {
+        console.error("Test beep failed:", e);
+      }
+      
+      // Create the main oscillator
       const oscillator = context.createOscillator();
       oscillator.type = 'square'; // Square wave is more audible than sine
       oscillator.frequency.value = frequency;

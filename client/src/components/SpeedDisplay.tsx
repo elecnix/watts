@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
+import { toast } from "@/hooks/use-toast";
 
 interface SpeedDisplayProps {
   speed: number;
@@ -70,8 +71,8 @@ export default function SpeedDisplay({
         )}
       </div>
       
-      {/* Audio toggle button */}
-      <div className="flex justify-center pt-6">
+      {/* Audio controls */}
+      <div className="flex justify-center pt-6 gap-3">
         <Button
           onClick={onToggleAudio}
           variant="ghost"
@@ -88,6 +89,44 @@ export default function SpeedDisplay({
           </span>
           <span>{audioEnabled ? 'Audio On' : 'Audio Off'}</span>
         </Button>
+        
+        {/* Test beep button */}
+        {audioEnabled && (
+          <Button
+            onClick={() => {
+              // Create a temporary audio context and play a test beep
+              const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
+              const context = new AudioContext();
+              const oscillator = context.createOscillator();
+              oscillator.type = 'square';
+              oscillator.frequency.value = 2000; // Use a high frequency that should be clearly audible
+              
+              const gainNode = context.createGain();
+              gainNode.gain.value = 1.0; // Maximum volume
+              
+              oscillator.connect(gainNode);
+              gainNode.connect(context.destination);
+              
+              // Play for 500ms
+              const now = context.currentTime;
+              oscillator.start(now);
+              oscillator.stop(now + 0.5);
+              
+              console.log("Playing test beep at 2000Hz for 500ms at maximum volume");
+              
+              // Show toast notification
+              toast({
+                title: "Test Sound",
+                description: "Playing a test sound at maximum volume",
+                duration: 2000
+              });
+            }}
+            variant="outline"
+            className="flex items-center px-4 py-2 rounded-full bg-primary/20 hover:bg-primary/30 text-sm"
+          >
+            Test Sound
+          </Button>
+        )}
       </div>
     </>
   );
