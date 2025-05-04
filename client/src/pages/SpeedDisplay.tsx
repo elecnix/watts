@@ -50,34 +50,61 @@ export default function SpeedDisplay() {
     };
   }, [locationPermissionGranted, audioPermissionGranted, audioEnabled, startAudio, stopAudio, audioContext]);
   
-  // Handle beep timing and frequency
+  // Handle beep timing and frequency - REPLACED WITH DIRECT APPROACH
   useEffect(() => {
     if (!locationPermissionGranted || !audioPermissionGranted || !audioEnabled) return;
     
-    // Calculate frequency based on speed (linear mapping from 800Hz at 0 km/h to 3000Hz at 50 km/h)
-    const minFreq = 800;
-    const maxFreq = 3000;
-    const maxSpeed = 50;
-    // Ensure we get at least the minimum frequency even when speed is 0
-    const frequency = speed === 0 ? minFreq : minFreq + (Math.min(speed, maxSpeed) / maxSpeed) * (maxFreq - minFreq);
+    console.log("Setting up NEW direct audio interval system");
     
-    console.log(`Setting up interval with frequency ${frequency}Hz at speed ${speed} km/h`);
+    // Calculate frequency based on speed (linear mapping from 800Hz at 0 km/h to 3000Hz at 50 km/h)
+    const getFrequency = (currentSpeed: number) => {
+      const minFreq = 800;
+      const maxFreq = 3000;
+      const maxSpeed = 50;
+      return currentSpeed === 0 ? minFreq : minFreq + (Math.min(currentSpeed, maxSpeed) / maxSpeed) * (maxFreq - minFreq);
+    };
+    
+    // Function to create and play a beep directly (not using the hook)
+    const createBeep = () => {
+      try {
+        const freq = getFrequency(speed);
+        console.log(`Direct beep: Creating beep at ${freq}Hz for speed ${speed} km/h`);
+        
+        // Create context directly
+        const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
+        const context = new AudioContext();
+        
+        // Create nodes
+        const oscillator = context.createOscillator();
+        oscillator.type = 'square';
+        oscillator.frequency.value = freq;
+        
+        const gainNode = context.createGain();
+        gainNode.gain.value = 1.0; // Maximum volume
+        
+        // Connect and play
+        oscillator.connect(gainNode);
+        gainNode.connect(context.destination);
+        
+        // Play for 200ms
+        const now = context.currentTime;
+        oscillator.start(now);
+        oscillator.stop(now + 0.2);
+        
+        console.log(`Direct beep: Playing at ${freq}Hz`);
+      } catch (error) {
+        console.error("Error creating direct beep:", error);
+      }
+    };
+    
+    // Create the first beep
+    createBeep();
     
     // Set up interval for beeping every 2 seconds
-    const interval = setInterval(() => {
-      // Force a minimum frequency of 800Hz for zero speed
-      const actualFreq = speed === 0 ? minFreq : frequency;
-      playBeep(actualFreq, 0.2); // Play beep with calculated frequency for 200ms
-      console.log(`Page: Triggering beep at ${actualFreq}Hz for speed ${speed} km/h`);
-    }, 2000);
-    
-    // Initial beep
-    const initialFreq = speed === 0 ? minFreq : frequency;
-    playBeep(initialFreq, 0.2);
-    console.log(`Page: Playing initial beep at ${initialFreq}Hz for speed ${speed} km/h`);
+    const interval = setInterval(createBeep, 2000);
     
     return () => clearInterval(interval);
-  }, [locationPermissionGranted, audioPermissionGranted, audioEnabled, speed, playBeep]);
+  }, [locationPermissionGranted, audioPermissionGranted, audioEnabled, speed]);
   
   // Request location permission
   const requestLocationPermission = () => {

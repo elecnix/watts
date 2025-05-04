@@ -127,6 +127,45 @@ export default function SpeedDisplay({
             Test Sound
           </Button>
         )}
+        
+        {/* Force beep button */}
+        {audioEnabled && (
+          <Button
+            onClick={() => {
+              // Force a single beep at 800Hz (min frequency)
+              // Create a temporary audio context and play a test beep
+              const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
+              const context = new AudioContext();
+              const oscillator = context.createOscillator();
+              oscillator.type = 'square';
+              oscillator.frequency.value = 800; // Minimum frequency
+              
+              const gainNode = context.createGain();
+              gainNode.gain.value = 1.0; // Maximum volume
+              
+              oscillator.connect(gainNode);
+              gainNode.connect(context.destination);
+              
+              // Play for 200ms
+              const now = context.currentTime;
+              oscillator.start(now);
+              oscillator.stop(now + 0.2);
+              
+              console.log("Playing manual beep at 800Hz for 200ms at maximum volume");
+              
+              // Show toast notification
+              toast({
+                title: "Speed Beep",
+                description: "Playing a speed beep sound (as if at 0 km/h)",
+                duration: 2000
+              });
+            }}
+            variant="outline"
+            className="flex items-center px-4 py-2 rounded-full bg-destructive/20 hover:bg-destructive/30 text-sm"
+          >
+            Speed Beep
+          </Button>
+        )}
       </div>
     </>
   );
