@@ -63,10 +63,12 @@ export default function SpeedDisplay() {
     // Set up interval for beeping every 2 seconds
     const interval = setInterval(() => {
       playBeep(frequency, 0.2); // Play beep with calculated frequency for 200ms
+      console.log("Page: Triggering beep");
     }, 2000);
     
     // Initial beep
     playBeep(frequency, 0.2);
+    console.log("Page: Playing initial beep");
     
     return () => clearInterval(interval);
   }, [locationPermissionGranted, audioPermissionGranted, audioEnabled, speed, playBeep]);

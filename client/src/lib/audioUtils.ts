@@ -34,21 +34,21 @@ export function createAudioContext(): AudioContext | null {
   }
 }
 
-// Generate a sine wave tone
+// Generate a square wave tone for maximum audibility
 export function generateTone(
   context: AudioContext,
   frequency: number,
   duration: number,
-  volume: number = 0.1
+  volume: number = 1.0
 ): void {
-  // Create oscillator
+  // Create oscillator with square wave for more audible beep
   const oscillator = context.createOscillator();
-  oscillator.type = 'sine';
+  oscillator.type = 'square'; // Square wave is much more noticeable than sine
   oscillator.frequency.value = frequency;
   
-  // Create gain node for volume
+  // Create gain node with maximum volume
   const gainNode = context.createGain();
-  gainNode.gain.value = 0.3; // Higher volume
+  gainNode.gain.value = 1.0; // Maximum volume
   
   // Connect nodes
   oscillator.connect(gainNode);
@@ -59,7 +59,5 @@ export function generateTone(
   oscillator.start(now);
   oscillator.stop(now + duration);
   
-  // Fade out to avoid clicks
-  gainNode.gain.linearRampToValueAtTime(volume, now + duration - 0.05);
-  gainNode.gain.linearRampToValueAtTime(0, now + duration);
+  console.log(`Utils: Generated tone at ${frequency}Hz for ${duration}s at maximum volume`);
 }

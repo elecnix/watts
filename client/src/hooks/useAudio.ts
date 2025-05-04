@@ -33,19 +33,29 @@ export default function useAudio() {
   
   // Play a beep with the given frequency
   const playBeep = useCallback((frequency: number, duration: number) => {
-    if (!audioContextRef.current) return;
+    // Try to initialize audio context if it's not already initialized
+    if (!audioContextRef.current) {
+      try {
+        const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
+        audioContextRef.current = new AudioContext();
+        setAudioInitialized(true);
+      } catch (error) {
+        console.error("Failed to initialize audio context:", error);
+        return;
+      }
+    }
     
     try {
       const context = audioContextRef.current;
       
-      // Create oscillator
+      // Create oscillator with square wave for more audible beep
       const oscillator = context.createOscillator();
-      oscillator.type = 'sine';
+      oscillator.type = 'square'; // Square wave is more audible than sine
       oscillator.frequency.value = frequency;
       
-      // Create gain node for volume control
+      // Create gain node with maximum volume
       const gainNode = context.createGain();
-      gainNode.gain.value = 0.2; // Slightly increase volume
+      gainNode.gain.value = 1.0; // Maximum volume
       
       // Connect nodes
       oscillator.connect(gainNode);
@@ -56,9 +66,7 @@ export default function useAudio() {
       oscillator.start(now);
       oscillator.stop(now + duration);
       
-      // Apply fade out to avoid clicks
-      gainNode.gain.linearRampToValueAtTime(0.2, now + duration - 0.05);
-      gainNode.gain.linearRampToValueAtTime(0, now + duration);
+      console.log(`Playing beep at ${frequency}Hz for ${duration}s at maximum volume`);
     } catch (error) {
       console.error("Error playing beep:", error);
     }
