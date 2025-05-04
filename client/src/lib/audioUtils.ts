@@ -40,7 +40,7 @@ export function generateTone(
   frequency: number,
   duration: number,
   volume: number = 1.0
-): void {
+): OscillatorNode {
   // Create oscillator with square wave for more audible beep
   const oscillator = context.createOscillator();
   oscillator.type = 'square'; // Square wave is much more noticeable than sine
@@ -59,5 +59,9 @@ export function generateTone(
   oscillator.start(now);
   oscillator.stop(now + duration);
   
+  // Log the tone generation
   console.log(`Utils: Generated tone at ${frequency}Hz for ${duration}s at maximum volume`);
+  
+  // Return the oscillator reference to prevent garbage collection before sound completes
+  return oscillator;
 }

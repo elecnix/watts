@@ -58,17 +58,23 @@ export default function SpeedDisplay() {
     const minFreq = 800;
     const maxFreq = 3000;
     const maxSpeed = 50;
-    const frequency = minFreq + (Math.min(speed, maxSpeed) / maxSpeed) * (maxFreq - minFreq);
+    // Ensure we get at least the minimum frequency even when speed is 0
+    const frequency = speed === 0 ? minFreq : minFreq + (Math.min(speed, maxSpeed) / maxSpeed) * (maxFreq - minFreq);
+    
+    console.log(`Setting up interval with frequency ${frequency}Hz at speed ${speed} km/h`);
     
     // Set up interval for beeping every 2 seconds
     const interval = setInterval(() => {
-      playBeep(frequency, 0.2); // Play beep with calculated frequency for 200ms
-      console.log("Page: Triggering beep");
+      // Force a minimum frequency of 800Hz for zero speed
+      const actualFreq = speed === 0 ? minFreq : frequency;
+      playBeep(actualFreq, 0.2); // Play beep with calculated frequency for 200ms
+      console.log(`Page: Triggering beep at ${actualFreq}Hz for speed ${speed} km/h`);
     }, 2000);
     
     // Initial beep
-    playBeep(frequency, 0.2);
-    console.log("Page: Playing initial beep");
+    const initialFreq = speed === 0 ? minFreq : frequency;
+    playBeep(initialFreq, 0.2);
+    console.log(`Page: Playing initial beep at ${initialFreq}Hz for speed ${speed} km/h`);
     
     return () => clearInterval(interval);
   }, [locationPermissionGranted, audioPermissionGranted, audioEnabled, speed, playBeep]);

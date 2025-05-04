@@ -6,7 +6,7 @@ export default function useAudio() {
   
   // Initialize audio context
   const startAudio = useCallback(() => {
-    if (audioInitialized) return;
+    if (audioInitialized && audioContextRef.current) return;
     
     try {
       const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
@@ -15,7 +15,16 @@ export default function useAudio() {
         return;
       }
       
+      // Create a new audio context
       audioContextRef.current = new AudioContext();
+      
+      // Play a silent sound to ensure audio context is running
+      const oscillator = audioContextRef.current.createOscillator();
+      oscillator.connect(audioContextRef.current.destination);
+      oscillator.start();
+      oscillator.stop(audioContextRef.current.currentTime + 0.001);
+      
+      console.log("Audio context initialized with state:", audioContextRef.current.state);
       setAudioInitialized(true);
     } catch (error) {
       console.error("Failed to initialize audio context:", error);
@@ -49,17 +58,7 @@ export default function useAudio() {
       const context = audioContextRef.current;
       
       // Create oscillator with square wave for more audible beep
-      // Try playing a short beep at 1kHz to ensure audio works
-      try {
-        const testOscillator = context.createOscillator();
-        testOscillator.type = 'square';
-        testOscillator.frequency.value = 1000;
-        testOscillator.connect(context.destination);
-        testOscillator.start();
-        testOscillator.stop(context.currentTime + 0.01);
-      } catch (e) {
-        console.error("Test beep failed:", e);
-      }
+      // Test beep has been removed since we now have a manual test button
       
       // Create the main oscillator
       const oscillator = context.createOscillator();
